@@ -6,12 +6,14 @@
 使用多分支，main为主分支，release为测试分支，开发功能前首先拉main分支代码，创建本地功能分支以feature/XXX命名，开发完成后使用rebase方式合并到release分支，测完合到main分支。
 如：
 
+```
 git pull 
 git checkout -b feature/xxx
 git checkout release
 git pull -r
 git cherry-pick #id
 git push
+```
 
 
 ## 简介
