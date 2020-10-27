@@ -16,10 +16,7 @@ class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 0,
       visible: false,
-      help: '',
-      prefix: '86',
       getPasswordStatus: this.getPasswordStatus.bind(this),
     };
   }
@@ -57,7 +54,7 @@ class Register extends Component {
       // validateFields,
       getFieldDecorator: fd,
     } = form;
-    const { count, help, visible } = this.state;
+    const { visible } = this.state;
 
     const passwordStatusMap = {
       ok: (
@@ -81,23 +78,46 @@ class Register extends Component {
       pass: 'normal',
       poor: 'exception',
     };
+    const CheckPass = async (rule, value, callback) => {
+      const confirm = form.getFieldValue('confirm');
+      this.setState({
+        visible:true
+      })
+      if (confirm && confirm !== value) {
+        callback('两次输入不一致！');
+      } else {
+        callback();
+      }
+    };
+    const RecheckPass = async (rule, value, callback) => {
+      const password = form.getFieldValue('password');
+      console.log('password', password);
+      try {
+        if (password && password !== value) {
+          callback('两次输入不一致');
+        } else {
+          callback();
+        }
+      } catch (error) {
+        callback(error);
+      }
+    };
     return (
       <div className={styles.register_form}>
         <Form layout={'vertical'}>
-          <FormItem label="用户名" help={help}>
+          <FormItem label="用户名">
             {fd('name', {
               rules: [
-                { required: true, message: formatMessage({ id: 'validation.password.required' }) },
-                {
-                  validator: this.checkConfirm,
-                },
+                { required: true, message: '用户名不能为空' },
+                { max: 10, message: '用户名长度不能多于10位' },
+                { min: 4, message: '用户名长度不能少于4位' },
               ],
-            })(<Input size="large" type="text" />)}
+            })(<Input autoComplete="off" size="large" type="text" />)}
           </FormItem>
-          <FormItem label="密码" help={help}>
+          <FormItem label="密码">
             <Popover
               content={
-                <div style={{ padding: '4px 0' }}>
+                <div>
                   {passwordStatusMap[this.getPasswordStatus()]}
                   {this.renderPasswordProgress(passwordProgressMap)}
                   <div style={{ marginTop: 10 }}>
@@ -112,10 +132,15 @@ class Register extends Component {
               {fd('password', {
                 rules: [
                   {
-                    validator: this.checkPassword,
+                    pattern: /^(?![A-Z]+$)(?![a-z]+$)(?!\d+$)\S{8,}$/,
+                    message: '密码须由数字,大写字母,小写字母,至少其中两种组成',
+                  },
+                  {
+                    validator: CheckPass,
                   },
                 ],
-              })(<Input size="large" type="password" />)}
+                validateTrigger: 'onBlur',
+              })(<Input.Password autoComplete="off" size="large" type="password" />)}
             </Popover>
           </FormItem>
           <FormItem label="再次输入">
@@ -126,10 +151,11 @@ class Register extends Component {
                   message: formatMessage({ id: 'validation.password.required' }),
                 },
                 {
-                  validator: this.checkConfirm,
+                  validator: RecheckPass,
                 },
               ],
-            })(<Input size="large" type="password" />)}
+              validateTrigger: 'onBlur',
+            })(<Input.Password autoComplete="off" size="large" type="password" />)}
           </FormItem>
 
           <FormItem label="邮箱">
@@ -144,7 +170,8 @@ class Register extends Component {
                   message: formatMessage({ id: 'validation.email.wrong-format' }),
                 },
               ],
-            })(<Input size="large" />)}
+              validateTrigger: 'onBlur',
+            })(<Input autoComplete="off" size="large" />)}
           </FormItem>
 
           <FormItem>
