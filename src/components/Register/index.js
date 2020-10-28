@@ -20,6 +20,14 @@ class Register extends Component {
       getPasswordStatus: this.getPasswordStatus.bind(this),
     };
   }
+
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form, onSubmit } = this.props;
+    form.validateFields({ force: true }, (errors, values) => {
+      onSubmit(errors, values);
+    });
+  };
   getPasswordStatus = () => {
     const { form } = this.props;
     const value = form.getFieldValue('password');
@@ -81,8 +89,8 @@ class Register extends Component {
     const CheckPass = async (rule, value, callback) => {
       const confirm = form.getFieldValue('confirm');
       this.setState({
-        visible:true
-      })
+        visible: true,
+      });
       if (confirm && confirm !== value) {
         callback('两次输入不一致！');
       } else {
@@ -104,9 +112,9 @@ class Register extends Component {
     };
     return (
       <div className={styles.register_form}>
-        <Form layout={'vertical'}>
+        <Form layout={'vertical'} onSubmit={this.handleSubmit}>
           <FormItem label="用户名">
-            {fd('name', {
+            {fd('username', {
               rules: [
                 { required: true, message: '用户名不能为空' },
                 { max: 10, message: '用户名长度不能多于10位' },
@@ -159,7 +167,7 @@ class Register extends Component {
           </FormItem>
 
           <FormItem label="邮箱">
-            {fd('mail', {
+            {fd('e_mail', {
               rules: [
                 {
                   required: true,
