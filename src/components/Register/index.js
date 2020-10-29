@@ -1,7 +1,7 @@
 /**
- * @author M
- * @email mpw0311@163.com
- * @version  1.0.0
+ * @author Clover
+ * @email 378406712@qq.com
+ * @version  1.0.1
  * @description  用户注册组件
  */
 import { Component } from 'react';
@@ -99,7 +99,6 @@ class Register extends Component {
     };
     const RecheckPass = async (rule, value, callback) => {
       const password = form.getFieldValue('password');
-      console.log('password', password);
       try {
         if (password && password !== value) {
           callback('两次输入不一致');
